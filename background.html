@@ -1,0 +1,48 @@
+<html>
+<head>
+	<script src="src/jquery-1.7.1.min.js" type="text/javascript"></script>
+	<script src="src/derpy.js" type="text/javascript"></script>
+<script>
+
+function copy(text) {
+	elm = document.getElementById("clipboard");
+	elm.style.display = "block";
+	elm.value = text;
+	elm.select();
+	document.execCommand("Copy");
+	elm.style.display = "none";
+}
+
+function onClick() {
+	chrome.tabs.getSelected(null,function(tab) {
+		derpy(String(tab.url), function(err, url) {
+			if(err) {
+				alert("Failed to get link\n*Derp*: " + err);
+			} else {
+				copy(url);
+				alert("Derped link\nUrl: " + url);
+			}
+		});
+	});
+};
+
+window.derpy.start = function() {
+	chrome.browserAction.setIcon({path:"img/favicon_dim.ico"});
+}
+
+window.derpy.finish = function() {
+	chrome.browserAction.setIcon({path:"img/favicon_dim_dim.ico"});
+}
+
+window.derpy.ready = function() {
+	chrome.browserAction.setIcon({path:"img/favicon.ico"});
+}
+
+chrome.browserAction.onClicked.addListener(onClick);
+
+</script>
+</head>
+<body>
+<textarea id="clipboard" style="display:none;"></textarea>
+</body>
+</html>
