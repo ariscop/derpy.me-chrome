@@ -1,5 +1,4 @@
-/* Derpy.js, url shortener code. requires jquery > 1.6?*/
-
+/* Derpy.js, url shortener code */
 
 window.derpy = (function() {
 	
@@ -37,27 +36,77 @@ window.derpy = (function() {
 		start();
 		url = encodeURIComponent(url);
 		
-		var reqUrl = "http://derpy.me/?url=" + url;
+		var reqUrl = "http://api.derpy.me/v1/shorten.json?url=" + url;
 		
 		var req = jQuery.get(reqUrl);
 
 		req.done(function(data) {
 			var error = false;
-			try {
-				//jQuery is WIN
-				var url =  $(".shortlink", data)[0].getElementsByTagName('a')[0].href;
-			} catch(err) {
-				error = err;
+			var short, message;
+			alert(JSON.stringify(data))
+			if(data.success) {
+				short = 'http://derpy.me/' + data.data.keyword;
+				message = data.success.message;
+			} else if(data.error) {
+				error = true;
+				message = data.error.message;
+			} else {
+				error = true;
+				message = 'Malformed response';
 			}
-			callback(error, url);
+			
+			callback({
+				error: error,
+				data: short,
+				message: message
+			});
 			finish();
 		});
 		
 		req.fail(function() {
-			callback(req.statusText);
+			callback({
+				error: true,
+				message: req.statusText
+			});
 			ready();
 		});
 		
 		return true;
 	}
 })();
+
+function copy(text) {
+	elm = document.getElementById("clipboard");
+	elm.style.display = "block";
+	elm.value = text;
+	elm.select();
+	document.execCommand("Copy");
+	elm.style.display = "none";
+}
+
+function onClick() {
+	chrome.tabs.getSelected(null,function(tab) {
+		derpy(String(tab.url), function(data) {
+			if(data.error) {
+				alert("Link Failed to Copy" + "\n*Derp*: " + data.message);
+			} else {
+				copy(data.data);
+				alert("Link Coppied\n" + data.message + "\nUrl: " + data.data);
+			}
+		});
+	});
+};
+
+window.derpy.start = function() {
+	chrome.browserAction.setIcon({path:"img/favicon_dim.ico"});
+}
+
+window.derpy.finish = function() {
+	chrome.browserAction.setIcon({path:"img/favicon_dim_dim.ico"});
+}
+
+window.derpy.ready = function() {
+	chrome.browserAction.setIcon({path:"img/favicon.ico"});
+}
+
+chrome.browserAction.onClicked.addListener(onClick);
