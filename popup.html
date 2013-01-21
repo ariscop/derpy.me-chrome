@@ -1,33 +1,14 @@
+<!doctype html>
 <html>
 <head>
-	<script src="src/jquery-1.7.1.min.js" type="text/javascript"></script>
+	<title>derpy.me URL shortener</title>
+	<script src="src/jquery-1.9.0.min.js" type="text/javascript"></script>
 	<script src="src/derpy.js" type="text/javascript"></script>
-<script>
-chrome.tabs.getSelected(null,function(tab) {
-	alert("prerun")
-	try {
-	derpy(String(tab.url), function(err, url) {
-		alert(document.getElementById("shortlink").value);
-		if(err) {
-			document.getElementById("statusimg").src = "img/favicon_dim_dim.ico";
-			document.forms[0].elements("shortlink").value = "*Derp*: " + error;
-		} else {
-			document.getElementById("statusimg").src = "img/favicon.ico";
-			document.getElementById("shortlink").select();
-			document.execCommand("Copy");
-			alert("sucess");
-		}
-	});
-	} catch (err) {
-		alert("*Derp*: " + err);
-	}
-});
-</script>
 </head>
-<body>
+<body style="width: 186px;">
 <form>
-	<img id="statusimg" src="img/favicon_dim.gif">
-	<input name="shortlink" type="text" value="Derping link...">
+	<span style="line-height: 22px; display: inline-block; vertical-align: middle;"><img id="statusimg" src="img/icon16_dim.png"></span>
+	<input name="shortlink" type="text" placeholder="Derping link..." style="width: 160px;">
 </form>
 </body>
 </body>
