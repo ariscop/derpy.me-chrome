@@ -48,7 +48,6 @@ window.derpy = (function() {
 			} else if(data.error) {
 				error = true;
 				message = data.error.message;
-				alert(message);
 			} else {
 				error = true;
 				message = 'Malformed response';
@@ -77,20 +76,20 @@ window.derpy = (function() {
 function shortenURL() {
 	chrome.tabs.getSelected(null,function(tab) {
 		try {
-			derpy(String(tab.url), function(error, url, message) {
-				if(error) {
-					$("#statusimg").src = "img/icon16_dim.png";
-					$("input[name=shortlink]").value = "*Derp*: " + message;
+			derpy(String(tab.url), function(response) {			
+				if(response.error) {
+					$("#statusimg").attr("src", "img/icon16_dim.png");
+					$("input[name=shortlink]").val("*Derp*: " + response.message);
 				} else {
-					$("#statusimg").src = "img/icon16.png";
-					$("input[name=shortlink]").value = url;
+					$("#statusimg").attr("src", "img/icon16.png");
+					$("input[name=shortlink]").val(response.data);
 					$("input[name=shortlink]").select();
 					document.execCommand("Copy");
 				}
 			});
 		} catch (error) {
-			$("#statusimg").src = "img/icon16_dim.png";
-			$("input[name=shortlink]").value = "*Derp*: " + error;
+			$("#statusimg").attr("src", "img/icon16_dim.png");
+			$("input[name=shortlink]").val("*Derp*: " + error);
 		}
 	});
 };
