@@ -98,15 +98,15 @@ function onClick() {
 };
 
 window.derpy.start = function() {
-	chrome.browserAction.setIcon({path:"img/favicon_dim.ico"});
+	chrome.browserAction.setIcon({path:"img/icon16_dim.png"});
 }
 
 window.derpy.finish = function() {
-	chrome.browserAction.setIcon({path:"img/favicon_dim_dim.ico"});
+	chrome.browserAction.setIcon({path:"img/icon16_light.png"});
 }
 
 window.derpy.ready = function() {
-	chrome.browserAction.setIcon({path:"img/favicon.ico"});
+	chrome.browserAction.setIcon({path:"img/icon16.png"});
 }
 
 chrome.browserAction.onClicked.addListener(onClick);
