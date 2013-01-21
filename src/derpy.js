@@ -36,20 +36,19 @@ window.derpy = (function() {
 		start();
 		url = encodeURIComponent(url);
 		
-		var reqUrl = "http://api.derpy.me/v1/shorten.json?url=" + url;
-		
-		var req = jQuery.get(reqUrl);
+		var apiTarget = "http://api.derpy.me/v1/shorten.json?url=" + url;
+		var request = jQuery.get(apiTarget);
 
-		req.done(function(data) {
+		request.done(function(data) {
 			var error = false;
 			var short, message;
-			alert(JSON.stringify(data))
 			if(data.success) {
 				short = 'http://derpy.me/' + data.data.keyword;
 				message = data.success.message;
 			} else if(data.error) {
 				error = true;
 				message = data.error.message;
+				alert(message);
 			} else {
 				error = true;
 				message = 'Malformed response';
@@ -63,10 +62,10 @@ window.derpy = (function() {
 			finish();
 		});
 		
-		req.fail(function() {
+		request.fail(function() {
 			callback({
 				error: true,
-				message: req.statusText
+				message: request.statusText
 			});
 			ready();
 		});
@@ -75,28 +74,26 @@ window.derpy = (function() {
 	}
 })();
 
-function copy(text) {
-	elm = document.getElementById("clipboard");
-	elm.style.display = "block";
-	elm.value = text;
-	elm.select();
-	document.execCommand("Copy");
-	elm.style.display = "none";
-}
-
-function onClick() {
+function shortenURL() {
 	chrome.tabs.getSelected(null,function(tab) {
-		derpy(String(tab.url), function(data) {
-			if(data.error) {
-				alert("Link Failed to Copy" + "\n*Derp*: " + data.message);
-			} else {
-				copy(data.data);
-				alert("Link Coppied\n" + data.message + "\nUrl: " + data.data);
-			}
-		});
+		try {
+			derpy(String(tab.url), function(error, url, message) {
+				if(error) {
+					$("#statusimg").src = "img/icon16_dim.png";
+					$("input[name=shortlink]").value = "*Derp*: " + message;
+				} else {
+					$("#statusimg").src = "img/icon16.png";
+					$("input[name=shortlink]").value = url;
+					$("input[name=shortlink]").select();
+					document.execCommand("Copy");
+				}
+			});
+		} catch (error) {
+			$("#statusimg").src = "img/icon16_dim.png";
+			$("input[name=shortlink]").value = "*Derp*: " + error;
+		}
 	});
 };
-
 window.derpy.start = function() {
 	chrome.browserAction.setIcon({path:"img/icon16_dim.png"});
 }
@@ -109,4 +106,6 @@ window.derpy.ready = function() {
 	chrome.browserAction.setIcon({path:"img/icon16.png"});
 }
 
-chrome.browserAction.onClicked.addListener(onClick);
+document.addEventListener('DOMContentLoaded', function () {
+  shortenURL();
+});

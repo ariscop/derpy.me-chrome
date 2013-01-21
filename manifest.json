@@ -3,7 +3,6 @@
   "description": "The even more derpier link shortener, now with Chrome!",
   "version": "0.2",
   "manifest_version": 2,
-  "background": {"page": "background.html"},
   "permissions": [
     "tabs", "contextMenus",
     "http://api.derpy.me/"
@@ -16,7 +15,7 @@
   },
   "browser_action": {
     "default_icon": "img/icon16.png",
-    "default_title": "derpy.me"//,
-    //"default_popup": "popup.html"
+    "default_title": "derpy.me",
+    "default_popup": "popup.html"
   }
 }
