@@ -1,16 +1,21 @@
 {
-  "name": "Derpy link Shortener.",
-  "version": "0.1",
+  "name": "derpy.me link shortener.",
+  "description": "The even more derpier link shortener, now with Chrome!",
+  "version": "0.2",
   "manifest_version": 2,
-  "background": {"page": "background.html"},
   "permissions": [
     "tabs", "contextMenus",
     "http://api.derpy.me/"
   ],
-  //"name": "Shortens links with derp and copies them to the clipboard"
+  "icons": {
+    "16": "img/icon16.png",
+    "32": "img/icon32.png",
+    "48": "img/icon48.png",
+    "128": "img/icon128.png"
+  },
   "browser_action": {
-    "default_icon": "img/favicon.ico", // optional
-    "default_title": "Derpy.me"//, // optional; shown in tooltip
-    //"default_popup": "popup.html"
+    "default_icon": "img/icon16.png",
+    "default_title": "derpy.me",
+    "default_popup": "popup.html"
   }
 }

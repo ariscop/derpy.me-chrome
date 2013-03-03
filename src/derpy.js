@@ -36,14 +36,12 @@ window.derpy = (function() {
 		start();
 		url = encodeURIComponent(url);
 		
-		var reqUrl = "http://api.derpy.me/v1/shorten.json?url=" + url;
-		
-		var req = jQuery.get(reqUrl);
+		var apiTarget = "http://api.derpy.me/v1/shorten.json?url=" + url;
+		var request = jQuery.get(apiTarget);
 
-		req.done(function(data) {
+		request.done(function(data) {
 			var error = false;
 			var short, message;
-			alert(JSON.stringify(data))
 			if(data.success) {
 				short = 'http://derpy.me/' + data.data.keyword;
 				message = data.success.message;
@@ -63,10 +61,10 @@ window.derpy = (function() {
 			finish();
 		});
 		
-		req.fail(function() {
+		request.fail(function() {
 			callback({
 				error: true,
-				message: req.statusText
+				message: request.statusText
 			});
 			ready();
 		});
@@ -75,38 +73,38 @@ window.derpy = (function() {
 	}
 })();
 
-function copy(text) {
-	elm = document.getElementById("clipboard");
-	elm.style.display = "block";
-	elm.value = text;
-	elm.select();
-	document.execCommand("Copy");
-	elm.style.display = "none";
-}
-
-function onClick() {
+function shortenURL() {
 	chrome.tabs.getSelected(null,function(tab) {
-		derpy(String(tab.url), function(data) {
-			if(data.error) {
-				alert("Link Failed to Copy" + "\n*Derp*: " + data.message);
-			} else {
-				copy(data.data);
-				alert("Link Coppied\n" + data.message + "\nUrl: " + data.data);
-			}
-		});
+		try {
+			derpy(String(tab.url), function(response) {			
+				if(response.error) {
+					$("#statusimg").attr("src", "img/icon16_dim.png");
+					$("input[name=shortlink]").val("*Derp*: " + response.message);
+				} else {
+					$("#statusimg").attr("src", "img/icon16.png");
+					$("input[name=shortlink]").val(response.data);
+					$("input[name=shortlink]").select();
+					document.execCommand("Copy");
+				}
+			});
+		} catch (error) {
+			$("#statusimg").attr("src", "img/icon16_dim.png");
+			$("input[name=shortlink]").val("*Derp*: " + error);
+		}
 	});
 };
-
 window.derpy.start = function() {
-	chrome.browserAction.setIcon({path:"img/favicon_dim.ico"});
+	chrome.browserAction.setIcon({path:"img/icon16_dim.png"});
 }
 
 window.derpy.finish = function() {
-	chrome.browserAction.setIcon({path:"img/favicon_dim_dim.ico"});
+	chrome.browserAction.setIcon({path:"img/icon16_light.png"});
 }
 
 window.derpy.ready = function() {
-	chrome.browserAction.setIcon({path:"img/favicon.ico"});
+	chrome.browserAction.setIcon({path:"img/icon16.png"});
 }
 
-chrome.browserAction.onClicked.addListener(onClick);
+document.addEventListener('DOMContentLoaded', function () {
+  shortenURL();
+});
